@@ -60,6 +60,9 @@ all: external source test
 .PHONY : clean
 clean: clean-source clean-test
 
+.PHONY : clean-all
+clean-all: clean-external clean-source clean-test
+
 .PHONY : install
 install: source root-access install-source
 	if [ $(TYPE) == "lib" ] && ! [ -d "$(INSTALL_PATH)/include/$(NAME)" ]; then \

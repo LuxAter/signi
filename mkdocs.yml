@@ -1,4 +1,4 @@
 site_name: signi
-theme: readable 
+theme: yeti 
 pages:
   - Home: index.md

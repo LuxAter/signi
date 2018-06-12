@@ -7,10 +7,10 @@ define print
 printf "%b%s%b\n" "$(2)" "$(1)" "$(NO_COLOR)"
 endef
 
-all: gtest
+all: gtest libpng libjpeg
 
 .PHONY : clean
-clean: 
+clean: gtest_clean libpng_clean libjpeg_clean
 
 
 GTEST_ALL = $(BASE_PATH)/$(BUILD_DIR)/gtest/gtest-all.o
@@ -49,3 +49,29 @@ $(GTEST_MAIN):
 	mkdir -p $(@D)
 	$(call print,Building $@,$(COMPILE_COLOR))
 	$(COMPILER) -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -pthread -c $(GTEST_DIR)/src/gtest_main.cc -o $@
+
+.PHONY : libpng
+libpng:
+	$(call print,LibPNG,$(TARGET_COLOR))
+	if [ ! -f "./libpng/configure" ]; then cd libpng && ./autogen.sh; fi
+	if [ ! -f "./libpng/Makefile" ]; then cd libpng&& ./configure --prefix=$(BASE_PATH)/$(BUILD_DIR)/libpng; fi
+	if [ ! -d "$(BASE_PATH)/$(BUILD_DIR)/libpng" ]; then cd libpng && $(MAKE) install; fi
+
+.PHONY : libpng_clean
+libpng_clean:
+	$(call print,LibPNG,$(CLEAN_COLOR))
+	cd libpng && $(MAKE) clean
+	if [ -d "$(BASE_PATH)/$(BUILD_DIR)/libpng" ]; then rm -r $(BASE_PATH)/$(BUILD_DIR)/libpng; fi
+
+.PHONY : libjpeg
+libjpeg:
+	$(call print,LibJPEG,$(TARGET_COLOR))
+	if [ ! -f "./jpeg-9c/Makefile" ]; then cd jpeg-9c && ./configure --prefix=$(BASE_PATH)/$(BUILD_DIR)/libjpeg; fi
+	if [ ! -d "$(BASE_PATH)/$(BUILD_DIR)/libjpeg" ]; then cd jpeg-9c && $(MAKE) install; fi
+
+.PHONY : libjpeg_clean
+libjpeg_clean:
+	$(call print,LibJPEG,$(CLEAN_COLOR))
+	cd jpeg-9c && $(MAKE) clean
+	if [ -d "$(BASE_PATH)/$(BUILD_DI)/libjpeg" ]; then rm -r $(BASE_PATH)/$(BUILD_DIR)/libjpeg; fi
+
