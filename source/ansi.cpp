@@ -37,7 +37,9 @@ bool signi::AnsiWrite(const std::string& file, const Image& img,
   std::ofstream out(file.c_str());
   if (out.is_open()) {
     out << AnsiWriteString(img, character);
+    out.close();
   }
+  return true;
 }
 
 std::string signi::AnsiWriteString(const Image& img, AnsiCharacter character) {
@@ -108,7 +110,20 @@ std::string signi::AnsiWriteString(const Image& img, AnsiCharacter character) {
   return result;
 }
 
-signi::Image signi::AnsiRead(const std::string& file) {}
+signi::Image signi::AnsiRead(const std::string& file) {
+  std::ifstream load(file.c_str());
+  if(load.is_open()){
+    std::string file_str;
+    std::string line;
+    while(getline(load, line)){
+      file_str += line + "\n";
+    }
+    load.close();
+    return AnsiReadString(file_str);
+  }else{
+    return Image();
+  }
+}
 
 signi::Image signi::AnsiReadString(const std::string& img) {
   std::string first_line = split(img, '\n')[0];
@@ -134,7 +149,6 @@ signi::Image signi::AnsiReadString(const std::string& img) {
     int x = 0;
     for (auto block : split(line, '\033')) {
       uint8_t state = 0;
-      // std::cout << block << "::";
       for (auto entry : split(block, ';')) {
         if (entry == "[38") {
           state = 1;
@@ -159,11 +173,8 @@ signi::Image signi::AnsiReadString(const std::string& img) {
           if (entry.back() != 'm') {
             std::string ch = entry.substr(entry.find('m') + 1);
             if (ch == "\u2588" || ch == "\u2588\u2588" || ch == "\u25A0") {
-              // std::cout << (int)fg.GetInt()[0] << "," << (int)fg.GetInt()[1]
-              //           << "," << (int)fg.GetInt()[2] << "\n";
               res.SetPixel(x, y, fg);
               x++;
-              // std::cout << "(" << x << ',' << y << ")\n";
             } else if (ch == "\u258C") {
               res.SetPixel(x, y, fg);
               x++;
@@ -181,11 +192,8 @@ signi::Image signi::AnsiReadString(const std::string& img) {
           if (entry.back() != 'm') {
             std::string ch = entry.substr(entry.find('m') + 1);
             if (ch == "\u2588" || ch == "\u2588\u2588" || ch == "\u25A0") {
-              // std::cout << (int)fg.GetInt()[0] << "," << (int)fg.GetInt()[1]
-              //           << "," << (int)fg.GetInt()[2] << "\n";
               res.SetPixel(x, y, fg);
               x++;
-              // std::cout << "(" << x << ',' << y << ")\n";
             } else if (ch == "\u258C") {
               res.SetPixel(x, y, fg);
               x++;

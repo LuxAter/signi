@@ -1,6 +1,5 @@
 #ifndef SIGNI_IMAGE_HPP_
 #define SIGNI_IMAGE_HPP_
-
 #include <array>
 #include <vector>
 
@@ -34,22 +33,35 @@ namespace signi {
       return std::make_pair(width_, height_);
     }
 
-    inline void SetPixel(int x, int y, Pixel pixel);
+    inline void SetPixel(int x, int y, Pixel pixel) {
+      if (static_cast<unsigned>(x) < width_ &&
+          static_cast<unsigned>(y) < height_) {
+        pixel_data_[x][y] = pixel;
+      }
+    }
 
     void Fill(Pixel pixel);
 
-    void DrawLineLow(int x0, int y0, int x1, int y1, Pixel pixel);
-    void DrawLineHigh(int x0, int y0, int x1, int y1, Pixel pixel);
-    void DrawPixel(int x, int y, Pixel pixel);
+    void DrawLineLow(int x0, int y0, int x1, int y1, Pixel pixel, int breadth=1);
+    void DrawLineHigh(int x0, int y0, int x1, int y1, Pixel pixel, int breadth=1);
+    void DrawPixel(int x, int y, Pixel pixel, int breadth = 1);
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel, int breadth = 1);
     void DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2,
                       Pixel pixel, int breadth = 1);
     void DrawRectangle(int x, int y, int width, int height, Pixel pixel,
                        int breadth = 1);
+    void DrawCircle(int cx, int cy, int radius, Pixel pixel, int breadth = 1);
     void DrawPolygon(std::vector<int> x, std::vector<int> y, Pixel pixel,
                      int breadth = 1);
     void DrawPolygon(std::vector<std::array<int, 2>> points, Pixel pixel,
                      int breadth = 1);
+
+    void DrawTriangleFilled(int x0, int y0, int x1, int y1, int x2, int y2,
+                            Pixel pixel);
+    void DrawRectangleFilled(int x, int y, int width, int height, Pixel pixel);
+    void DrawCircleFilled(int x, int y, int radius, Pixel pixel);
+    void DrawPolygonFilled(std::vector<int> x, std::vector<int> y, Pixel pixel);
+    void DrawPolygonFilled(std::vector<std::array<int, 2>> points, Pixel pixel);
 
    private:
     std::size_t width_, height_;
