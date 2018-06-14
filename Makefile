@@ -16,8 +16,8 @@ export IGNORE=-Wno-gnu-zero-variadic-macro-arguments -Wno-ignored-optimization-a
 export COMPILER= clang++
 export CXXFLAGS= -MMD -std=c++17 -c -fPIC -Wall -Wextra -Wpedantic $(IGNORE) --static
 export INCLUDE= -I$(BASE_PATH)/$(EXTERNAL_DIR)/estl -I$(BASE_PATH)/$(BUILD_DIR)/libpng/include
-export LINK_DIRS = -L$(BASE_PATH)/$(BUILD_DIR)/libpng/lib
-export LINK= $(LINK_DIRS) $(BASE_PATH)/$(BUILD_DIR)/libpng/lib/libpng.a -lz
+export LINK_DIRS = -L$(BASE_PATH)/$(BUILD_DIR)/libpng/lib -L$(BASE_PATH)/$(BUILD_DIR)/libjpeg/lib
+export LINK= $(LINK_DIRS) $(BASE_PATH)/$(BUILD_DIR)/libpng/lib/libpng.a $(BASE_PATH)/$(BUILD_DIR)/libjpeg/lib/libjpeg.a -lz
 
 export INSTALL_PATH=/usr/local
 

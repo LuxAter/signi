@@ -7,3 +7,6 @@
 [submodule "external/estl"]
 	path = external/estl
 	url = https://github.com/LuxAtrumStudio/estl
+[submodule "external/libjpeg-turbo"]
+	path = external/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo

@@ -66,12 +66,12 @@ libpng_clean:
 .PHONY : libjpeg
 libjpeg:
 	$(call print,LibJPEG,$(TARGET_COLOR))
-	if [ ! -f "./jpeg-9c/Makefile" ]; then cd jpeg-9c && ./configure --prefix=$(BASE_PATH)/$(BUILD_DIR)/libjpeg; fi
-	if [ ! -d "$(BASE_PATH)/$(BUILD_DIR)/libjpeg" ]; then cd jpeg-9c && $(MAKE) install; fi
+	if [ ! -f "./jpeg-8d/Makefile" ]; then cd jpeg-8d && ./configure --prefix=$(BASE_PATH)/$(BUILD_DIR)/libjpeg; fi
+	if [ ! -d "$(BASE_PATH)/$(BUILD_DIR)/libjpeg" ]; then cd jpeg-8d && $(MAKE) install; fi
 
 .PHONY : libjpeg_clean
 libjpeg_clean:
 	$(call print,LibJPEG,$(CLEAN_COLOR))
-	cd jpeg-9c && $(MAKE) clean
+	cd jpeg-8d && $(MAKE) clean
 	if [ -d "$(BASE_PATH)/$(BUILD_DI)/libjpeg" ]; then rm -r $(BASE_PATH)/$(BUILD_DIR)/libjpeg; fi
 

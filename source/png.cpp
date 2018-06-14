@@ -1,14 +1,12 @@
 #include "png.hpp"
 
-#include <png.h>
-
 #include <cmath>
 
+#include <png.h>
 #include <estl/logger.hpp>
 
 #include "image.hpp"
 
-#include <iostream>
 
 bool signi::PngWrite(const std::string& file, const Image& img) {
   FILE* out = fopen(file.c_str(), "wb");
@@ -70,7 +68,7 @@ signi::Image signi::PngRead(const std::string& file) {
   unsigned char header[8];
   FILE* load = fopen(file.c_str(), "rb");
   if (!load) {
-    estl::logger::Error("File %s could not be opend", file.c_str());
+    estl::logger::Error("File %s could not be opened", file.c_str());
     return Image();
   }
   fread(header, 1, 8, load);
