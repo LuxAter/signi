@@ -32,6 +32,9 @@ namespace signi {
     inline std::pair<std::size_t, std::size_t> GetSize() const {
       return std::make_pair(width_, height_);
     }
+    inline const Pixel GetPixel(int x, int y) const {
+      return pixel_data_[x][y];
+    }
 
     inline void SetPixel(int x, int y, Pixel pixel) {
       if (static_cast<unsigned>(x) < width_ &&

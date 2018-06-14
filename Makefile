@@ -1,7 +1,6 @@
 SHELL = /bin/bash
 
 export NAME= signi
-export LINK=
 export TYPE= lib
 
 export SOURCE_DIR= source
@@ -15,8 +14,10 @@ export BASE_PATH=$(shell pwd)
 
 export IGNORE=-Wno-gnu-zero-variadic-macro-arguments -Wno-ignored-optimization-argument
 export COMPILER= clang++
-export CXXFLAGS= -MMD -std=c++17 -c -fPIC -Wall -Wextra -Wpedantic $(IGNORE)
-export INCLUDE= -I$(BASE_PATH)/$(EXTERNAL_DIR)/estl
+export CXXFLAGS= -MMD -std=c++17 -c -fPIC -Wall -Wextra -Wpedantic $(IGNORE) --static
+export INCLUDE= -I$(BASE_PATH)/$(EXTERNAL_DIR)/estl -I$(BASE_PATH)/$(BUILD_DIR)/libpng/include
+export LINK_DIRS = -L$(BASE_PATH)/$(BUILD_DIR)/libpng/lib
+export LINK= $(LINK_DIRS) $(BASE_PATH)/$(BUILD_DIR)/libpng/lib/libpng.a -lz
 
 export INSTALL_PATH=/usr/local
 

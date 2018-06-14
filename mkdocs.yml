@@ -1,4 +1,6 @@
-site_name: signi
+site_name: Signi
 theme: yeti 
 pages:
   - Home: index.md
+  - API:
+    - Image: api/image.md

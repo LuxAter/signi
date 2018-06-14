@@ -4,7 +4,8 @@
 #include "image.hpp"
 
 namespace signi {
-  
+  bool PngWrite(const std::string& file, const Image& img);
+  Image PngRead(const std::string& file);
 } // namespace signi
 
 #endif  // SIGNI_PNG_HPP_

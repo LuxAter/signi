@@ -46,6 +46,7 @@ std::string signi::AnsiWriteString(const Image& img, AnsiCharacter character) {
   std::string result;
   const std::vector<std::vector<Pixel>>* pixel_data = img.GetPixelData();
   std::pair<std::size_t, std::size_t> size = img.GetSize();
+  estl::logger::Trace("A");
   switch (character) {
     case ANSI_BLOCK: {
       for (std::size_t y = 0; y < size.second; ++y) {
@@ -97,7 +98,10 @@ std::string signi::AnsiWriteString(const Image& img, AnsiCharacter character) {
       for (std::size_t y = 0; y < size.second; y += 2) {
         for (std::size_t x = 0; x < size.first; ++x) {
           std::array<uint8_t, 4> rgba = pixel_data->at(x).at(y).GetInt();
-          std::array<uint8_t, 4> b_rgba = pixel_data->at(x).at(y + 1).GetInt();
+          std::array<uint8_t, 4> b_rgba = {0, 0, 0, 0};
+          if (y + 1 < size.second) {
+            b_rgba = pixel_data->at(x).at(y + 1).GetInt();
+          }
           result += estl::base::format(
               "\033[38;2;%d;%d;%dm\033[48;2;%d;%d;%dm\u2580\033[0m", rgba[0],
               rgba[1], rgba[2], b_rgba[0], b_rgba[1], b_rgba[2]);
@@ -112,15 +116,15 @@ std::string signi::AnsiWriteString(const Image& img, AnsiCharacter character) {
 
 signi::Image signi::AnsiRead(const std::string& file) {
   std::ifstream load(file.c_str());
-  if(load.is_open()){
+  if (load.is_open()) {
     std::string file_str;
     std::string line;
-    while(getline(load, line)){
+    while (getline(load, line)) {
       file_str += line + "\n";
     }
     load.close();
     return AnsiReadString(file_str);
-  }else{
+  } else {
     return Image();
   }
 }
