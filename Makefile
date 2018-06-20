@@ -1,7 +1,6 @@
 SHELL = /bin/bash
 
 export NAME= signi
-export TYPE= lib
 
 export SOURCE_DIR= source
 export TEST_DIR= test
