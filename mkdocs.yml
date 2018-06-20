@@ -4,3 +4,8 @@ pages:
   - Home: index.md
   - API:
     - Image: api/image.md
+    - Pixel: api/pixel.md
+    - ANSI: api/ansi.md
+    - BMP: api/bmp.md
+    - JPEG: api/jpeg.md
+    - PNG: api/png.md
