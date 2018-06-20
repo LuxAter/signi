@@ -2,6 +2,9 @@
 *.d
 *.log
 *.swp
+*.png
+*.bmp
+*.jpeg
 build/*
 docs/html/*
 docs/latex/*
@@ -11,3 +14,4 @@ unit-test
 .gdb_history
 coverage/*
 core
+

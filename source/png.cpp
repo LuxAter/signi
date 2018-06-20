@@ -118,7 +118,6 @@ signi::Image signi::PngRead(const std::string& file) {
     byte_data[i] = (png_bytep)malloc(png_get_rowbytes(png, info));
   }
   png_read_image(png, byte_data);
-  std::cout << (int)color << "::" << (int)depth << "\n";
   uint8_t step = 3;
   if(color == 0){
     step = 1;
