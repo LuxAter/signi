@@ -16,7 +16,7 @@ double sinc(double x) {
 }
 
 double signi::NearestNeighborKernel(double x) {
-  if (std::fabs(x) < 0.5) {
+  if (std::fabs(x) <= 0.5) {
     return 1;
   } else {
     return 0;
@@ -84,19 +84,90 @@ double signi::LanczosKernel(double x) {
   }
 }
 
-signi::Pixel signi::ApplyKernel(
-    ResampleKernel kernel, const std::size_t& x, const std::size_t& y,
-    const double& dx, const double& dy,
-    const std::vector<std::vector<Pixel>>* pixel_data) {
-  double sx = x * dx;
-  double sy = y * dy;
-  double weight = 0.0;
-  double sum = 0.0;
-}
-
 signi::Image signi::Resample(const Image& src, std::size_t width,
                              std::size_t height,
                              std::function<double(double)> kernel) {
+  bool x_up = false, y_up = false;
+  if (width == 0 && height == 0) {
+    return src;
+  } else if (width == 0 && height != 0) {
+    width = src.GetSize().first *
+            (static_cast<double>(height) / src.GetSize().second);
+  } else if (width != 0 && height == 0) {
+    height = src.GetSize().second *
+             (static_cast<double>(width) / src.GetSize().first);
+  }
+  if (width > src.GetSize().first) {
+    x_up = true;
+  }
+  if (height > src.GetSize().second) {
+    y_up = true;
+  }
+  Image dest(width, height);
+  double dx = src.GetSize().first / static_cast<double>(width),
+         dy = src.GetSize().second / static_cast<double>(height);
+  std::vector<std::vector<Pixel>> tmp(width,
+                                      std::vector<Pixel>(src.GetSize().second));
+  for (std::size_t y = 0; y < src.GetSize().second; ++y) {
+    for (std::size_t x = 0; x < width; ++x) {
+      Pixel pixel;
+      double weight_norm = 0.0;
+      for (double sx = std::max(0.0, floor((static_cast<double>(x) - 3) * dx));
+           sx <= std::min(static_cast<double>(src.GetSize().first - 1),
+                          ceil((x + 3) * dx));
+           ++sx) {
+        double dist_x;
+        if (x_up) {
+          dist_x = (sx) - (x * dx);
+        } else {
+          dist_x = (sx / dx) - x;
+        }
+        double val = kernel(dist_x);
+        weight_norm += val;
+        Pixel src_pixel = src.GetPixel(sx, y);
+        pixel.r += val * src_pixel.r;
+        pixel.g += val * src_pixel.g;
+        pixel.b += val * src_pixel.b;
+      }
+      pixel.r /= weight_norm;
+      pixel.g /= weight_norm;
+      pixel.b /= weight_norm;
+      tmp.at(x).at(y) = pixel;
+    }
+  }
+  for (std::size_t y = 0; y < height; ++y) {
+    for (std::size_t x = 0; x < width; ++x) {
+      Pixel pixel;
+      double weight_norm = 0.0;
+      for (double sy = std::max(0.0, floor((static_cast<double>(y) - 3) * dx));
+           sy <= std::min(static_cast<double>(src.GetSize().second - 1),
+                          ceil((y + 3) * dy));
+           ++sy) {
+        double dist;
+        if (y_up) {
+          dist = (sy) - (y * dy);
+        } else {
+          dist = (sy / dy) - y;
+        }
+        double val = kernel(dist);
+        weight_norm += val;
+        Pixel src_pixel = tmp.at(x).at(sy);
+        pixel.r += val * src_pixel.r;
+        pixel.g += val * src_pixel.g;
+        pixel.b += val * src_pixel.b;
+      }
+      pixel.r /= weight_norm;
+      pixel.g /= weight_norm;
+      pixel.b /= weight_norm;
+      dest.SetPixel(x, y, pixel);
+    }
+  }
+  return dest;
+}
+
+signi::Image signi::OldResample(const Image& src, std::size_t width,
+                                std::size_t height,
+                                std::function<double(double)> kernel) {
   bool x_up = false, y_up = false;
   if (width == 0 && height == 0) {
     return src;
@@ -156,68 +227,4 @@ signi::Image signi::Resample(const Image& src, std::size_t width,
     }
   }
   return dest;
-}
-signi::Image signi::UpSample(const Image& src, std::size_t width,
-                             std::size_t height,
-                             std::function<double(double)> kernel) {
-  if (width == 0 && height == 0) {
-    return src;
-  } else if (width == 0 && height != 0) {
-    width = src.GetSize().first *
-            (static_cast<double>(height) / src.GetSize().second);
-  } else if (width != 0 && height == 0) {
-    height = src.GetSize().second *
-             (static_cast<double>(width) / src.GetSize().first);
-  }
-  Image dest(width, height);
-  double dx = src.GetSize().first / static_cast<double>(width),
-         dy = src.GetSize().second / static_cast<double>(height);
-  for (std::size_t y = 0; y < height; ++y) {
-    for (std::size_t x = 0; x < width; ++x) {
-      Pixel pixel;
-      double weight_norm = 0.0;
-      for (double sy = std::max(0.0, floor((static_cast<double>(y) - 3) * dy));
-           sy <= std::min(static_cast<double>(src.GetSize().second - 1),
-                          ceil((y + 3) * dy));
-           ++sy) {
-        for (double sx =
-                 std::max(0.0, floor((static_cast<double>(x) - 3) * dx));
-             sx <= std::min(static_cast<double>(src.GetSize().first - 1),
-                            ceil((x + 3) * dx));
-             ++sx) {
-          double dist_x = (sx) - (x * dx);
-          double dist_y = (sy) - (y * dy);
-          double dist = sqrt(pow(dist_x, 2) + pow(dist_y, 2));
-          double val = kernel(dist);
-          weight_norm += val;
-          Pixel src_pixel = src.GetPixel(sx, sy);
-          pixel.r += val * src_pixel.r;
-          pixel.g += val * src_pixel.g;
-          pixel.b += val * src_pixel.b;
-        }
-      }
-      pixel.r /= weight_norm;
-      pixel.g /= weight_norm;
-      pixel.b /= weight_norm;
-      dest.SetPixel(x, y, pixel);
-    }
-  }
-  return dest;
-}
-
-std::vector<double> signi::UpSample(const std::vector<double> src,
-                                    std::size_t width,
-                                    std::function<double(double)> kernel) {
-  std::vector<double> res;
-  double dx = src.size() / static_cast<double>(width);
-  for (std::size_t x = 0; x < width; ++x) {
-    double sum = 0.0, weight_norm = 0.0;
-    for (double sx = std::max(0.0, floor(((double)x - 3) * dx));
-         sx <= std::min((double)src.size() - 1, ceil((x + 3) * dx)); ++sx) {
-      weight_norm += kernel((((double)sx / dx) - x) * dx);
-      sum += (kernel((((double)sx / dx) - x) * dx) * src.at(sx));
-    }
-    res.push_back(sum / weight_norm);
-  }
-  return res;
 }

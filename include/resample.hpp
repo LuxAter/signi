@@ -25,15 +25,10 @@ namespace signi {
   double MitchellKernel(double x);
   double LanczosKernel(double x);
 
-  Pixel ApplyKernel(ResampleKernel kernel, const std::size_t& x,
-                    const std::size_t& y, const double& dx, const double& dy,
-                    const std::vector<std::vector<Pixel>>* pixel_data);
   Image Resample(const Image& src, std::size_t width, std::size_t height,
                    std::function<double(double)> kernel);
-  Image UpSample(const Image& src, std::size_t width, std::size_t height,
-                 std::function<double(double)> kernel);
-
-  std::vector<double> UpSample(const std::vector<double> src, std::size_t width, std::function<double(double)> kernel);
+  Image OldResample(const Image& src, std::size_t width, std::size_t height,
+                   std::function<double(double)> kernel);
 }  // namespace signi
 
 #endif  // SIGNI_RESAMPLE_HPP_
