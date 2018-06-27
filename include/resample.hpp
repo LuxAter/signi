@@ -22,14 +22,14 @@ namespace signi {
   double BellKernel(double x);
   double HermiteKernel(double x);
   double BicubicKernel(double x);
-  double MitchellKenel(double x);
+  double MitchellKernel(double x);
   double LanczosKernel(double x);
 
   Pixel ApplyKernel(ResampleKernel kernel, const std::size_t& x,
                     const std::size_t& y, const double& dx, const double& dy,
                     const std::vector<std::vector<Pixel>>* pixel_data);
-  Image DownSample(const Image& src, std::size_t width, std::size_t height,
-                   ResampleKernel kernel = NEAREST_NEIGHBOR);
+  Image Resample(const Image& src, std::size_t width, std::size_t height,
+                   std::function<double(double)> kernel);
   Image UpSample(const Image& src, std::size_t width, std::size_t height,
                  std::function<double(double)> kernel);
 

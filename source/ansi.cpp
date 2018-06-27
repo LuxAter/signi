@@ -9,7 +9,6 @@
 #include <vector>
 
 #include <estl/basic/format.hpp>
-#include <estl/logger.hpp>
 
 #include "image.hpp"
 
@@ -46,7 +45,6 @@ std::string signi::AnsiWriteString(const Image& img, AnsiCharacter character) {
   std::string result;
   const std::vector<std::vector<Pixel>>* pixel_data = img.GetPixelData();
   std::pair<std::size_t, std::size_t> size = img.GetSize();
-  estl::logger::Trace("A");
   switch (character) {
     case ANSI_BLOCK: {
       for (std::size_t y = 0; y < size.second; ++y) {
