@@ -27,8 +27,6 @@ namespace signi {
 
   Image Resample(const Image& src, std::size_t width, std::size_t height,
                    std::function<double(double)> kernel);
-  Image OldResample(const Image& src, std::size_t width, std::size_t height,
-                   std::function<double(double)> kernel);
 }  // namespace signi
 
 #endif  // SIGNI_RESAMPLE_HPP_
