@@ -194,6 +194,8 @@ void signi::Image::DrawPolygonFilled(std::vector<std::array<int, 2>> points,
     min_y = std::min(min_y, points[i][1]);
     max_y = std::max(max_y, points[i][1]);
   }
+  min_y = std::max(min_y, 0);
+  max_y = std::min(static_cast<std::size_t>(max_y), height_);
   for (int i = min_y; i <= max_y; i++) {
     std::vector<int> inter;
     for (std::size_t j = 0; j < points.size(); j++) {
@@ -223,4 +225,26 @@ bool signi::operator==(const Pixel& lhs, const Pixel& rhs) {
 }
 double signi::PixelDiff(const Pixel& lhs, const Pixel& rhs) {
   return pow(lhs.r - rhs.r, 2) + pow(lhs.g - rhs.g, 2) + pow(lhs.b - rhs.b, 2);
+}
+
+signi::Pixel signi::HVS(const uint16_t &h, const double &s, const double &v){
+  double c = v * s;
+  double x = c * (1 - std::fabs(std::fmod((h / 60.0), 2.0) - 1));
+  double m = v - c;
+  double rp = 0.0, gp = 0.0, bp = 0.0;
+  if(h < 60){
+    rp = c; gp = x;
+  }else if(h < 120){
+    rp = x; gp = c;
+  }else if(h < 180){
+    gp = c; bp = x;
+  }else if(h < 240){
+    gp = x; bp = c;
+  }else if(h < 300){
+    rp = x; bp = c;
+  }else if(h < 360){
+    rp = c;
+    bp = x;
+  }
+  return Pixel(rp + m, gp + m, bp + m);
 }

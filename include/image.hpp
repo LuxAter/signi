@@ -109,6 +109,7 @@ namespace signi {
   };
   bool operator==(const Pixel& lhs, const Pixel& rhs);
   double PixelDiff(const Pixel& lhs, const Pixel& rhs);
+  Pixel HVS(const uint16_t &h, const double &s, const double &v);
 }  // namespace signi
 
 #endif  // SIGNI_IMAGE_HPP_
