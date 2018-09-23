@@ -15,10 +15,10 @@ export IGNORE=-Wno-gnu-zero-variadic-macro-arguments -Wno-ignored-optimization-a
 export COMPILER= clang++
 export CXXFLAGS= -MMD -std=c++17 -c -fPIC -Wall -Wextra -Wpedantic $(IGNORE) --static
 export INCLUDE= -I$(BASE_PATH)/$(EXTERNAL_DIR)/estl -I$(BASE_PATH)/$(BUILD_DIR)/libpng/include
-export LINK_DIRS = -L$(BASE_PATH)/$(BUILD_DIR)/libpng/lib -L$(BASE_PATH)/$(BUILD_DIR)/libjpeg/lib
-export LINK= $(LINK_DIRS) $(BASE_PATH)/$(BUILD_DIR)/libpng/lib/libpng.a $(BASE_PATH)/$(BUILD_DIR)/libjpeg/lib/libjpeg.a -lz
+export LINK_DIRS= 
+export LINK= $(LINK_DIRS) -lz
 
-export INSTALL_PATH=/usr/local
+export INSTALL_PATH?=/usr/local
 
 export COMMON_INCLUDE=-I$(BASE_PATH)/$(INCLUDE_DIR) $(INCLUDE)
 
@@ -65,17 +65,20 @@ clean-all: clean-external clean-source clean-test
 
 .PHONY : install
 install: source root-access install-source
-	if [ $(TYPE) == "lib" ] && ! [ -d "$(INSTALL_PATH)/include/$(NAME)" ]; then \
+	if [ $(TYPE) == "lib" ] && ! [ -d "$(realpath $(INSTALL_PATH))/include/$(NAME)" ]; then \
+	  printf "$(realpath $(INSTALL_PATH))<<<<\n"\
 	  $(call print,Installing include directory,$(INSTALL_COLOR));\
-	  sudo mkdir $(INSTALL_PATH)/include/ -p;\
-	  sudo cp $(INCLUDE_DIR)/ $(INSTALL_PATH)/include/ -r;\
+	  mkdir $(INSTALL_PATH)/ -p; \
+	  mkdir $(INSTALL_PATH)/lib -p; \
+	  cp $(BASE_PATH)/$(INCLUDE_DIR)/ $(INSTALL_PATH)/include -r;\
+	  cp $(BASE_PATH)/$(BUILD_DIR)/libsigni.a $(INSTALL_PATH)/lib/libsigni.a;\
 	fi
 
 .PHONY : uninstall
 uninstall: root-access uninstall-source
 	if [ $(TYPE) == "lib" ] && [ -d "$(INSTALL_PATH)/include/$(NAME)" ]; then \
 	  $(call print,Uninstalling include directory,$(INSTALL_COLOR));\
-	  sudo rm $(INSTALL_PATH)/include/$(NAME) -rf;\
+	  rm $(INSTALL_PATH)/include/$(NAME) -rf;\
 	fi
 
 .PHONY : help
@@ -99,7 +102,7 @@ help:
 
 .PHONY : root-access
 root-access:
-	if [[ $$UID != 0 ]]; then \
+	if [[ $$UID != 0 ]] && [ $(INSTALL_PATH) == '/usr/local' ]; then \
 	  $(call print,Target requiers root access,$(ERROR_COLOR)); \
 	  exit 1; \
 	fi

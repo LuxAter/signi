@@ -6,10 +6,45 @@
 namespace signi {
   struct Pixel {
     Pixel() : r(0.0), g(0.0), b(0.0), a(1.0) {}
-    Pixel(int red, int green, int blue)
-        : r(red / 255.0), g(green / 255.0), b(blue / 255.0), a(1.0) {}
-    Pixel(double red, double green, double blue)
-        : r(red), g(green), b(blue), a(1.0) {}
+    Pixel(int red, int green, int blue, int alpha = 255)
+        : r(red / 255.0), g(green / 255.0), b(blue / 255.0), a(alpha / 255.0) {}
+    Pixel(double red, double green, double blue, double alpha=1.0)
+        : r(red), g(green), b(blue), a(alpha) {}
+    Pixel(const std::string& str) {
+      uint32_t red = 0, green = 0, blue = 0, alpha = 255;
+      switch (str.size()) {
+        case 9:
+          sscanf(str.c_str(), "#%02x%02x%02x%02x", &red, &green, &blue, &alpha);
+        case 8:
+          sscanf(str.c_str(), "%02x%02x%02x%02x", &red, &green, &blue, &alpha);
+        case 7:
+          sscanf(str.c_str(), "#%02x%02x%02x", &red, &green, &blue);
+          break;
+        case 6:
+          sscanf(str.c_str(), "%02x%02x%02x", &red, &green, &blue);
+          break;
+        case 5:
+          sscanf(str.c_str(), "#%01x%01x%01x%01x", &red, &green, &blue, &alpha);
+          break;
+        case 4:
+          if (str[0] == '#') {
+            sscanf(str.c_str(), "#%01x%01x%01x", &red, &green, &blue);
+          } else {
+            sscanf(str.c_str(), "%01x%01x%01x%01x", &red, &green, &blue,
+                   &alpha);
+          }
+          break;
+        case 3:
+          sscanf(str.c_str(), "%01x%01x%01x", &red, &green, &blue);
+          break;
+        default:
+          break;
+      }
+      r = static_cast<double>(red) / 255.0;
+      g = static_cast<double>(green) / 255.0;
+      b = static_cast<double>(blue) / 255.0;
+      a = static_cast<double>(alpha) / 255.0;
+    }
 
     inline std::array<uint8_t, 4> GetInt() const {
       return std::array<uint8_t, 4>{
@@ -45,8 +80,10 @@ namespace signi {
 
     void Fill(Pixel pixel);
 
-    void DrawLineLow(int x0, int y0, int x1, int y1, Pixel pixel, int breadth=1);
-    void DrawLineHigh(int x0, int y0, int x1, int y1, Pixel pixel, int breadth=1);
+    void DrawLineLow(int x0, int y0, int x1, int y1, Pixel pixel,
+                     int breadth = 1);
+    void DrawLineHigh(int x0, int y0, int x1, int y1, Pixel pixel,
+                      int breadth = 1);
     void DrawPixel(int x, int y, Pixel pixel, int breadth = 1);
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel, int breadth = 1);
     void DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2,
@@ -72,6 +109,7 @@ namespace signi {
   };
   bool operator==(const Pixel& lhs, const Pixel& rhs);
   double PixelDiff(const Pixel& lhs, const Pixel& rhs);
+  Pixel HVS(const uint16_t &h, const double &s, const double &v);
 }  // namespace signi
 
 #endif  // SIGNI_IMAGE_HPP_

@@ -37,13 +37,14 @@ clean:
 .PHONY : install
 install:
 	$(call print,Installing $(shell basename $(LIB)),$(INSTALL_COLOR));\
-	sudo mkdir $(INSTALL_PATH)/lib/ -p;\
-	sudo cp $(LIB) $(INSTALL_PATH)/lib/;\
+	printf "$(realpath $(INSTALL_PATH))>>>>\n"
+	mkdir $(realpath $(INSTALL_PATH))/lib/ -p;\
+	cp $(LIB) $(realpath $(INSTALL_PATH))/lib/;\
 
 .PHONY : uninstall
 uninstall:
 	$(call print,Uninstalling $(shell basename $(LIB)),$(INSTALL_COLOR));\
-	sudo rm $(INSTALL_PATH)/lib/$(shell basename $(LIB));\
+	rm $(INSTALL_PATH)/lib/$(shell basename $(LIB));\
 
 -include $(LIB_OBJ:.o=.d)
 
@@ -55,10 +56,10 @@ $(BASE_PATH)/$(BUILD_DIR)/$(DIR)/%.o: %.cpp
 $(LIB): lib_start $(LIB_OBJ)
 	$(call print,Linking $(shell basename $(LIB)),$(LINK_COLOR))
 	if [[ ! -z "$(LIB_OBJ)" ]]; then ar rcs $(LIB) $(LIB_OBJ); fi
-	mkdir libpng && cd libpng && ar x $(BASE_PATH)/$(BUILD_DIR)/libpng/lib/libpng.a
-	mkdir libjpeg && cd libjpeg && ar x $(BASE_PATH)/$(BUILD_DIR)/libjpeg/lib/libjpeg.a
-	ar -qc $(LIB) libpng/*.o libjpeg/*.o
-	rm -rf libpng/ libjpeg/
+	mkdir libpng_t && cd libpng_t && ar x $(BASE_PATH)/$(BUILD_DIR)/libpng/lib/libpng.a
+	mkdir libjpeg_t && cd libjpeg_t && ar x $(BASE_PATH)/$(BUILD_DIR)/libjpeg/lib/libjpeg.a
+	ar -qc $(LIB) libpng_t/*.o libjpeg_t/*.o
+	rm -rf libpng_t/ libjpeg_t/
 
 .PHONY : lib_start
 lib_start:
