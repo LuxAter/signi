@@ -1,0 +1,179 @@
+[
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/source/./bmp.o", 
+            "bmp.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/source", 
+        "file": "bmp.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/source/./image.o", 
+            "image.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/source", 
+        "file": "image.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/source/./resample.o", 
+            "resample.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/source", 
+        "file": "resample.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/source/./jpeg.o", 
+            "jpeg.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/source", 
+        "file": "jpeg.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/source/./ansi.o", 
+            "ansi.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/source", 
+        "file": "ansi.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-I/home/arden/Programming/cpp/signi/external/googletest/googletest/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/test/./tmp.o", 
+            "tmp.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/test", 
+        "file": "tmp.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/source/./main.o", 
+            "main.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/source", 
+        "file": "main.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/signi/include", 
+            "-I/home/arden/Programming/cpp/signi/external/estl", 
+            "-I/home/arden/Programming/cpp/signi/build/libpng/include", 
+            "-std=c++17", 
+            "-fPIC", 
+            "-Wall", 
+            "-Wextra", 
+            "-Wpedantic", 
+            "-Wno-gnu-zero-variadic-macro-arguments", 
+            "-Wno-ignored-optimization-argument", 
+            "--static", 
+            "-o", 
+            "/home/arden/Programming/cpp/signi/build/source/./png.o", 
+            "png.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/signi/source", 
+        "file": "png.cpp"
+    }
+]
