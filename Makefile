@@ -1,167 +1,174 @@
-SHELL = /bin/bash
 
-export NAME= signi
-
-export SOURCE_DIR= source
-export TEST_DIR= test
-export EXTERNAL_DIR = external
-export BUILD_DIR= build
-export INCLUDE_DIR= include
-export DOC_DIR= docs
-
-export BASE_PATH=$(shell pwd)
-
-export IGNORE=-Wno-gnu-zero-variadic-macro-arguments -Wno-ignored-optimization-argument
-export COMPILER= clang++
-export CXXFLAGS= -MMD -std=c++17 -c -fPIC -Wall -Wextra -Wpedantic $(IGNORE) --static
-export INCLUDE= -I$(BASE_PATH)/$(EXTERNAL_DIR)/estl -I$(BASE_PATH)/$(BUILD_DIR)/libpng/include
-export LINK_DIRS= 
-export LINK= $(LINK_DIRS) -lz
-
-export INSTALL_PATH?=/usr/local
-
-export COMMON_INCLUDE=-I$(BASE_PATH)/$(INCLUDE_DIR) $(INCLUDE)
-
-export SECTION_COLOR=\033[1;97m
-export TARGET_COLOR=\033[0;34m
-export LINK_COLOR=\033[0;35m
-export CLEAN_COLOR=\033[0;33m
-export COMPILE_COLOR=\033[0;32m
-export INSTALL_COLOR=\033[0;36m
-export ERROR_COLOR=\033[1;31m
-export NO_COLOR=\033[m
-
+SHELL=/bin/bash
 ifndef .VERBOSE
-  .SILENT:
+    .SILENT:
 endif
+ROOT=$(shell pwd)
+ROOT=/home/arden/Programming/cpp/signi
+CXX=clang++
+CXXIGNORE=
+CXXFLAGS=-std=c++17 -fPIC -Wall -Wpedantic --static
+LINK=-lz
+SOURCE=source
+INCLUDE_DIR=include
+INCLUDE=-I$(ROOT)/$(EXTERNAL)/estl -I$(ROOT)/$(BUILD)/libpng/include -I$(ROOT)/$(BUILD)/libjpeg/include
+BUILD=build
+EXTERNAL=external
+TEST=test
+PREFIX=~/testing
+COMMON_INCLUDE=-I$(ROOT)/$(INCLUDE_DIR) $(INCLUDE)
 
-define print_section
-str="$(1)";\
-    line_length=$$(expr length "$$str");\
-    printf "%b%s\n" "$(SECTION_COLOR)" "$$str";\
-    while [ $$line_length -gt 0 ]; do\
-      printf "=";\
-      let line_length=line_length-1;\
-    done;\
-    printf "%b\n" "$(NO_COLOR)"
+SCAN_COLOR=\033[1;35m
+BUILD_COLOR=\033[32m
+CLEAN_COLOR=\033[1;33m
+LINK_COLOR=\033[1;32m
+INSTALL_COLOR=\033[1;36m
+CMD_COLOR=\033[1;34m
+HELP_COLOR=\033[1;34m
+
+define scan_target
+printf "%b%s%b\n" "$(SCAN_COLOR)" "Scaning dependencies for target $(1)" "\033[0m"
 endef
-
-define print
-printf "%b%s%b\n" "$(2)" "$(1)" "$(NO_COLOR)"
+define complete_target
+printf "%s\n" "Built target $(1)"
 endef
-
+define clean_target
+printf "%b%s%b\n" "$(CLEAN_COLOR)" "Cleaning target $(1)" "\033[0m"
+endef
+define install_target
+printf "%b%s%b\n" "$(INSTALL_COLOR)" "Installing target $(1)" "\033[0m"
+endef
+define uninstall_target
+printf "%b%s%b\n" "$(INSTALL_COLOR)" "Unnstalling target $(1)" "\033[0m"
+endef
+define print_build_c
+str=$$(realpath --relative-to="$(ROOT)" "$(1)");    printf "%b%s%b\n" "$(BUILD_COLOR)" "Building C object $$str" "\033[0m"
+endef
+define print_build_cpp
+str=$$(realpath --relative-to="$(ROOT)" "$(1)");    printf "%b%s%b\n" "$(BUILD_COLOR)" "Building C++ object $$str" "\033[0m"
+endef
+define print_link_lib
+str=$$(realpath --relative-to="$(ROOT)" "$(1)");    printf "%b%s%b\n" "$(LINK_COLOR)" "Linking static library $$str" "\033[0m"
+endef
+define print_link_exe
+str=$$(realpath --relative-to="$(ROOT)" "$(1)");    printf "%b%s%b\n" "$(LINK_COLOR)" "Linking executable $$str" "\033[0m"
+endef
+define print_run_cmd
+printf "%b%s%b\n" "$(CMD_COLOR)" "Running '$(1)'" "\033[0m"
+endef
 define help
-printf "%b%*s%b: %s\n" "$(TARGET_COLOR)" 14 "$(1)" "$(NO_COLOR)" "$(2)"
+printf "%b%*s%b: %s\n" "$(HELP_COLOR)" 20 "$(1)" "\033[0m" "$(2)"
 endef
 
-.PHONY : all
-all: external source test
+all: build-signi
 
-.PHONY : clean
-clean: clean-source clean-test
+clean: clean-signi clean-libsigni.a
 
-.PHONY : clean-all
-clean-all: clean-external clean-source clean-test
+# SIGNI {{{
 
-.PHONY : install
-install: source root-access install-source
-	if [ $(TYPE) == "lib" ] && ! [ -d "$(realpath $(INSTALL_PATH))/include/$(NAME)" ]; then \
-	  printf "$(realpath $(INSTALL_PATH))<<<<\n"\
-	  $(call print,Installing include directory,$(INSTALL_COLOR));\
-	  mkdir $(INSTALL_PATH)/ -p; \
-	  mkdir $(INSTALL_PATH)/lib -p; \
-	  cp $(BASE_PATH)/$(INCLUDE_DIR)/ $(INSTALL_PATH)/include -r;\
-	  cp $(BASE_PATH)/$(BUILD_DIR)/libsigni.a $(INSTALL_PATH)/lib/libsigni.a;\
-	fi
+SIGNI=/home/arden/Programming/cpp/signi/signi
+SIGNI_FILES=source/main.cpp
+SIGNI_OBJS=$(SIGNI_FILES:%=$(ROOT)/$(BUILD)/%.o)
+-include $(SIGNI_OBJS:.o=.d)
 
-.PHONY : uninstall
-uninstall: root-access uninstall-source
-	if [ $(TYPE) == "lib" ] && [ -d "$(INSTALL_PATH)/include/$(NAME)" ]; then \
-	  $(call print,Uninstalling include directory,$(INSTALL_COLOR));\
-	  rm $(INSTALL_PATH)/include/$(NAME) -rf;\
-	fi
+build-signi: build-libsigni.a pre-signi $(SIGNI)
+	$(call complete_target,$(shell basename $(SIGNI)))
 
-.PHONY : help
-help:
-	$(call print_section,Makefile Help)
-	printf "List of all acceptable make targets\n\n"
-	$(call help,all,Builds external, source, and test files and projects)
-	$(call help,clean,Clean files created from external, source, and test)
-	$(call help,install,Installs include directories and libraries)
-	$(call help,uninstall,Removes installed include directores and libraries)
-	$(call help,help,Display this help page)
-	$(call help,external,Builds external files and projects)
-	$(call help,clean-external,Cleans files created from external)
-	$(call help,source,Builds source files and projects)
-	$(call help,clean-source,Cleans files created from source)
-	$(call help,test,Builds test files and projects)
-	$(call help,clean-test,Cleans files created from test)
-	$(call help,docs,Compiles documentation)
-	$(call help,clean-docs,Cleans files created from docs)
-	$(call help,runtest,Compiles and runs unit tests)
+clean-signi:
+	$(call clean_target,$(shell basename $(SIGNI)))
+	if [ -e "$(SIGNI)" ]; then rm $(SIGNI); fi
 
-.PHONY : root-access
-root-access:
-	if [[ $$UID != 0 ]] && [ $(INSTALL_PATH) == '/usr/local' ]; then \
-	  $(call print,Target requiers root access,$(ERROR_COLOR)); \
-	  exit 1; \
-	fi
+pre-signi:
+	$(call scan_target,$(shell basename $(SIGNI)))
 
-.PHONY : external
-external:
-	$(call print_section,External Dependencies)
-	if [ -d "$(EXTERNAL_DIR)" ]; then cd "$(EXTERNAL_DIR)" && $(MAKE); fi
-.PHONY : clean-external
-clean-external:
-	$(call print_section,External Dependencies)
-	if [ -d "$(EXTERNAL_DIR)" ]; then cd "$(EXTERNAL_DIR)" && $(MAKE) clean; fi
+$(SIGNI): $(SIGNI_OBJS)
+	$(call print_link_exe,$(shell basename $(SIGNI)))
+	$(CXX) $(SIGNI_OBJS) $(LIBSIGNI.A) $(LINK) $(COMMON_INCLUDE) -o $(SIGNI)
 
-.PHONY : source
-source:
-	$(call print_section,Source Files)
-	if [ -d "$(SOURCE_DIR)" ]; then cd "$(SOURCE_DIR)" && $(MAKE); fi
-.PHONY : clean-source
-clean-source:
-	$(call print_section,Source Files)
-	if [ -d "$(SOURCE_DIR)" ]; then cd "$(SOURCE_DIR)" && $(MAKE) clean; fi
-.PHONY : install-source
-install-source:
-	$(call print_section,Source Files)
-	if [ -d "$(SOURCE_DIR)" ]; then cd "$(SOURCE_DIR)" && $(MAKE) install; fi
-.PHONY: uninstall-source
-uninstall-source:
-	$(call print_section,Source Files)
-	if [ -d "$(SOURCE_DIR)" ]; then cd "$(SOURCE_DIR)" && $(MAKE) uninstall; fi
+install-signi: build-signi
+	$(call install_target,$(shell basename $(SIGNI)))
+	mkdir -p $(PREFIX)/bin/
+	cp $(SIGNI) $(PREFIX)/bin
 
+uninstall-signi:
+	$(call uninstall_target,$(shell basename $(SIGNI)))
+	if [ -e "$(PREFIX)/bin/$(shell basename $(SIGNI))" ]; then rm $(PREFIX)/bin/$(shell basename $(SIGNI)); fi
 
-.PHONY : test
-test:
-	$(call print_section,Unit Tests)
-	if [ -d "$(TEST_DIR)" ]; then cd "$(TEST_DIR)" && $(MAKE); fi
+# }}}
+# LIBSIGNI.A {{{
 
-.PHONY : clean-test
-clean-test:
-	$(call print_section,Unit Tests)
-	if [ -d "$(TEST_DIR)" ]; then cd "$(TEST_DIR)" && $(MAKE) clean; fi
+LIBSIGNI.A=build/libsigni.a
+LIBSIGNI.A_FILES=$(filter-out source/main.cpp, $(shell find "source/" -name "*.cpp"))
+LIBSIGNI.A_OBJS=$(LIBSIGNI.A_FILES:%=$(ROOT)/$(BUILD)/%.o)
+-include $(LIBSIGNI.A_OBJS:.o=.d)
 
-.PHONY : runtest
-runtest: test
-	find . -name "*.gcda" -delete
-	./unit-test --gtest_color=yes
+build-libsigni.a: build-libpng.a build-libjpeg.a pre-libsigni.a $(LIBSIGNI.A)
+	$(call complete_target,$(shell basename $(LIBSIGNI.A)))
 
+clean-libsigni.a: clean-libpng.a clean-libjpeg.a
+	$(call clean_target,$(shell basename $(LIBSIGNI.A)))
+	if [ -e "$(LIBSIGNI.A)" ]; then rm $(LIBSIGNI.A); fi
 
-.PHONY: docs
-docs:
-	$(call print_section,Documentation)
-	
-	$(call print,Running mkdocs...,$(COMPILE_COLOR))
-	mkdocs build
-	
+pre-libsigni.a:
+	$(call scan_target,$(shell basename $(LIBSIGNI.A)))
 
-.PHONY: clean-docs
-clean-docs:
-	$(call print_section,Documentation)
-	if [ -d "$(DOC_DIR)/html" ]; then rm "$(DOC_DIR)/html" -r; fi
-	if [ -d "$(DOC_DIR)/latex" ]; then rm "$(DOC_DIR)/latex" -r; fi
-	if [ -d "$(DOC_DIR)/xml" ]; then rm "$(DOC_DIR)/xml" -r; fi
-	$(call print,Cleaned Documentation,$(CLEAN_COLOR))
+$(LIBSIGNI.A): $(LIBSIGNI.A_OBJS)
+	$(call print_link_lib,$(shell basename $(LIBSIGNI.A)))
+	ar rcs $@ $(LIBSIGNI.A_OBJS)
+	mkdir -p $(ROOT)/tmp/libpng.a && cd $(ROOT)/tmp/libpng.a && ar x /home/arden/Programming/cpp/signi/build/libpng.a/lib/libpng.a && ar qc $(ROOT)/$@ $(ROOT)/tmp/libpng.a/*.o && rm -rf $(ROOT)/tmp/libpng.a
+	mkdir -p $(ROOT)/tmp/libjpeg.a && cd $(ROOT)/tmp/libjpeg.a && ar x /home/arden/Programming/cpp/signi/build/libjpeg.a/lib/libjpeg.a && ar qc $(ROOT)/$@ $(ROOT)/tmp/libjpeg.a/*.o && rm -rf $(ROOT)/tmp/libjpeg.a
+
+install-libsigni.a: build-libsigni.a
+	$(call install_target,$(shell basename $(LIBSIGNI.A)))
+	mkdir -p $(PREFIX)/lib/
+	mkdir -p $(PREFIX)/include/$(NAME)/
+	cp $(LIBSIGNI.A) $(PREFIX)/lib
+	if [ ! -z "$(INCLUDE_DIR)" ]; then cp -R $(INCLUDE_DIR)/ $(PREFIX)/include/$(NAME)/; fi
+	if [ ! -z "$(shell find $(SOURCE_DIR) -name "*.h")" ]; then cd $(SOURCE_DIR) && cp --parents $(sehll cd $(SOURCE_DIR) && find . -name "*.h") $(PREFIX)/include/$(NAME); fi
+	if [ ! -z "$(shell find $(SOURCE_DIR) -name "*.hpp")" ]; then cd $(SOURCE_DIR) && cp --parents $(sehll cd $(SOURCE_DIR) && find . -name "*.hpp") $(PREFIX)/include/$(NAME); fi
+
+uninstall-libsigni.a:
+	$(call uninstall_target,$(shell basename $(LIBSIGNI.A)))
+	if [ ! -e "$(PREFIX)/lib/$(shell basename $(LIBSIGNI.A))" ]; then rm $(PREFIX)/lib/$(shell basename $(LIBSIGNI.A)); fi
+	if [ ! -e "$(PREFIX)/include/$(NAME)" ]; then rm $(PREFIX)/include/$(NAME) -r; fi
+
+# }}}
+# LIBPNG.A {{{
+
+build-libpng.a: pre-libpng.a
+	if [ ! -f "external/libpng/configure" ]; then $(call print_run_cmd,autogen.sh) && cd external/libpng && ./autogen.sh; fi
+	if [ ! -f "external/libpng/Makefile" ]; then $(call print_run_cmd,configure) && cd external/libpng && ./configure --prefix=/home/arden/Programming/cpp/signi/build/libpng.a; fi
+	if [ ! -d "/home/arden/Programming/cpp/signi/build/libpng.a" ]; then $(call print_run_cmd,make) && cd external/libpng && make install; fi
+	$(call complete_target,libpng.a)
+
+clean-libpng.a:
+	$(call clean_target,libpng.a)
+	if [ -e "external/libpng/Makefile" ]; then cd external/libpng && make clean && rm Makefile; fi
+	if [ -d "/home/arden/Programming/cpp/signi/build/libpng.a" ]; then rm /home/arden/Programming/cpp/signi/build/libpng.a -r; fi
+
+pre-libpng.a:
+	$(call scan_target,libpng.a)
+
+# }}}
+# LIBJPEG.A {{{
+
+build-libjpeg.a: pre-libjpeg.a
+	if [ ! -f "external/jpeg-8d/configure" ]; then $(call print_run_cmd,autogen.sh) && cd external/jpeg-8d && ./autogen.sh; fi
+	if [ ! -f "external/jpeg-8d/Makefile" ]; then $(call print_run_cmd,configure) && cd external/jpeg-8d && ./configure --prefix=/home/arden/Programming/cpp/signi/build/libjpeg.a; fi
+	if [ ! -d "/home/arden/Programming/cpp/signi/build/libjpeg.a" ]; then $(call print_run_cmd,make) && cd external/jpeg-8d && make install; fi
+	$(call complete_target,libjpeg.a)
+
+clean-libjpeg.a:
+	$(call clean_target,libjpeg.a)
+	if [ -e "external/jpeg-8d/Makefile" ]; then cd external/jpeg-8d && make clean && rm Makefile; fi
+	if [ -d "/home/arden/Programming/cpp/signi/build/libjpeg.a" ]; then rm /home/arden/Programming/cpp/signi/build/libjpeg.a -r; fi
+
+pre-libjpeg.a:
+	$(call scan_target,libjpeg.a)
+
+# }}}
+
+$(ROOT)/$(BUILD)/%.cpp.o: %.cpp
+	$(call print_build_cpp,$@)
+	mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -MMD -c $(COMMON_INCLUDE) $< -o $@

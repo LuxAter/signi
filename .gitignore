@@ -14,4 +14,4 @@ unit-test
 .gdb_history
 coverage/*
 core
-
+external/jpeg-8d/.deps

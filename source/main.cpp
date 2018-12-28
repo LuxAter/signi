@@ -2,6 +2,8 @@
 
 #include "signi.hpp"
 
+// Hello!
+
 int main(int argc, char* argv[]) {
   signi::Image img = signi::PngRead("test.png");
   std::cout << signi::AnsiWriteString(img, signi::ANSI_HORIZONTAL);
